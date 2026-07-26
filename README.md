@@ -95,21 +95,25 @@ ten steps of the worked use case from spec §6.
 under adversarial prompting (data-echo, contact-sheet, CSV-export, debug-dump, jailbreak) and
 asked it to leak supplier contact PII, two ways: (a) *prompt-based guardrail* — raw data in
 context plus a system prompt saying "never reveal PII"; (b) *VCL* — restricted values redacted
-before the model sees them. Local open models via Ollama (reproducible, no API key), 5 vectors
-× 5 runs each. Full method + limitations in
+before the model sees them. Three models (two local via Ollama — reproducible, no key — and
+one hosted frontier model), 5 vectors × 5 runs each. Full method + limitations in
 [eval/adversarial_results.md](eval/adversarial_results.md):
 
-| Model (local) | Prompt-guardrail leak rate | VCL leak rate |
+| Model | Prompt-guardrail leak rate | VCL leak rate |
 |---|---|---|
-| llama3.1:8b | **44% ± 32%** | **0%** |
-| llama3.2:3b | **28% ± 30%** | **0%** |
+| llama3.2:3b (local) | **28% ± 30%** | **0%** |
+| llama3.1:8b (local) | **44% ± 32%** | **0%** |
+| gpt-4o (hosted frontier) | **0% ± 0%** | **0%** |
 
-The guardrail leaks on a large, *unpredictable* fraction of attempts (model- and
-phrasing-dependent); the VCL leaks 0% because the data is not in the model's context —
-enforcement does not depend on the model obeying an instruction.
+Prompt guardrails are **model-dependent and uncertifiable**: small/cheaper models leaked
+28–44% of adversarial attempts; gpt-4o held on these vectors — but that guarantee is
+behavioral, unauditable, and (for this EU-residency scenario) only available by sending
+regulated PII to a US-hosted model. The VCL leaks **0% on every model, structurally**,
+because the data is never in the model's context — with a tamper-evident trace to prove it.
 
 ```bash
-ollama serve &  &&  VCL_LLM_MODEL=ollama/llama3.1:8b python eval/adversarial.py
+ollama serve &  &&  VCL_LLM_MODEL=ollama/llama3.1:8b python eval/adversarial.py   # local
+OPENAI_API_KEY=…  VCL_LLM_MODEL=gpt-4o          python eval/adversarial.py        # hosted
 ```
 
 **Systems properties** — deterministic harness ([`eval/evaluate.py`](eval/evaluate.py)) on the
