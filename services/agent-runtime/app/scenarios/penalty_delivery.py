@@ -133,8 +133,26 @@ class PenaltyDeliveryScenario(Scenario):
                              f"{_money(r['penalty_exposure'])}, delivery-risk {r['delivery_risk_score']:.2f}")
         return "\n".join(lines)
 
+    @staticmethod
+    def _sanitize(row: dict) -> dict:
+        """Strip restricted values BEFORE the LLM sees them, so redaction is enforced by the
+        policy layer — not merely requested of the model (which an adversarial prompt can
+        override). This is the paper's 'governed at runtime, not prompt-based' claim."""
+        r = dict(row)
+        pols = {x["policy"] for x in r.get("redactions", [])}
+        if "mask_supplier_contact_pii" in pols:
+            r["contact_email"] = r["contact_phone"] = "[redacted]"
+        if "redact_commercial_terms" in pols:
+            r["penalty_amount"] = "[redacted]"
+        return r
+
     def _llm(self, intent, allowed, excluded) -> str:
-        payload = {"allowed": allowed, "excluded": excluded}
+        payload = {
+            "allowed": [self._sanitize(r) for r in allowed],
+            # excluded rows are named with their exclusion reason only (no restricted data)
+            "excluded": [{"name": r["name"], "region": r["region"],
+                          "excluded_by": r.get("excluded_by")} for r in excluded],
+        }
         system = (
             "You are the response-synthesis node of a governed enterprise AI system. Write a "
             "concise analyst answer using ONLY the supplied data; do not invent values. List the "

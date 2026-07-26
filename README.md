@@ -91,22 +91,43 @@ ten steps of the worked use case from spec §6.
 
 ## Evaluation
 
-A reproducible harness ([`eval/evaluate.py`](eval/evaluate.py)) runs four controlled studies
-against the live stack — full results in [eval/results.md](eval/results.md):
+**Headline finding — why enforcement belongs *outside* the model.** We put a real LLM agent
+under adversarial prompting (data-echo, contact-sheet, CSV-export, debug-dump, jailbreak) and
+asked it to leak supplier contact PII, two ways: (a) *prompt-based guardrail* — raw data in
+context plus a system prompt saying "never reveal PII"; (b) *VCL* — restricted values redacted
+before the model sees them. Local open models via Ollama (reproducible, no API key), 5 vectors
+× 5 runs each. Full method + limitations in
+[eval/adversarial_results.md](eval/adversarial_results.md):
+
+| Model (local) | Prompt-guardrail leak rate | VCL leak rate |
+|---|---|---|
+| llama3.1:8b | **44% ± 32%** | **0%** |
+| llama3.2:3b | **28% ± 30%** | **0%** |
+
+The guardrail leaks on a large, *unpredictable* fraction of attempts (model- and
+phrasing-dependent); the VCL leaks 0% because the data is not in the model's context —
+enforcement does not depend on the model obeying an instruction.
+
+```bash
+ollama serve &  &&  VCL_LLM_MODEL=ollama/llama3.1:8b python eval/adversarial.py
+```
+
+**Systems properties** — deterministic harness ([`eval/evaluate.py`](eval/evaluate.py)) on the
+seeded data; full results in [eval/results.md](eval/results.md):
 
 | Study | Result |
 |---|---|
-| **Policy-enforcement coverage** | 15/15 prohibited actions blocked (100%), 0% false-block on 8 benign actions — vs 0% for an ungoverned agent |
-| **Regulatory-obligation coverage** | 6/6 EU AI Act / NIST obligations auto-verifiable from the trace (100%) — vs 0% with no governed trace |
 | **Tamper-evidence** | 40/40 tampered audit trails detected (100%), 0% false positives on intact trails |
 | **Governance latency** | ~126 ms/query (median 122 ms, p95 147 ms); in-pipeline governance ≈20 ms (22%); OPA ≈2.7 ms/decision |
+| **Policy-enforcement coverage** | 15/15 prohibited actions blocked, 0% false-block on 8 benign actions (deterministic correctness check) |
+| **Regulatory-obligation coverage** | 6/6 EU AI Act / NIST obligations auto-verifiable from the trace |
 
 ```bash
-docker compose up -d && python eval/evaluate.py   # deterministic on the seeded data
+docker compose up -d && python eval/evaluate.py
 ```
 
-Latency figures are machine-dependent (measured on the reference host); the coverage and
-tamper-evidence results are deterministic and reproduce exactly.
+Latency figures are machine-dependent (measured on the reference host); the tamper-evidence and
+coverage results are deterministic and reproduce exactly.
 
 ---
 
