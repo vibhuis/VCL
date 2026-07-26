@@ -28,3 +28,6 @@ node_modules/
 
 # Build tooling fetched locally (not committed)
 bin/opa
+
+# Never commit papers/binaries into the code repo
+*.pdf
