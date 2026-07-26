@@ -89,6 +89,27 @@ ten steps of the worked use case from spec §6.
 
 ---
 
+## Evaluation
+
+A reproducible harness ([`eval/evaluate.py`](eval/evaluate.py)) runs four controlled studies
+against the live stack — full results in [eval/results.md](eval/results.md):
+
+| Study | Result |
+|---|---|
+| **Policy-enforcement coverage** | 15/15 prohibited actions blocked (100%), 0% false-block on 8 benign actions — vs 0% for an ungoverned agent |
+| **Regulatory-obligation coverage** | 6/6 EU AI Act / NIST obligations auto-verifiable from the trace (100%) — vs 0% with no governed trace |
+| **Tamper-evidence** | 40/40 tampered audit trails detected (100%), 0% false positives on intact trails |
+| **Governance latency** | ~126 ms/query (median 122 ms, p95 147 ms); in-pipeline governance ≈20 ms (22%); OPA ≈2.7 ms/decision |
+
+```bash
+docker compose up -d && python eval/evaluate.py   # deterministic on the seeded data
+```
+
+Latency figures are machine-dependent (measured on the reference host); the coverage and
+tamper-evidence results are deterministic and reproduce exactly.
+
+---
+
 ## Repository layout
 
 ```

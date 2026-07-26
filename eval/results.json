@@ -1,0 +1,53 @@
+{
+  "as_of": "2026-06-18",
+  "A_policy_enforcement_coverage": {
+    "prohibited_actions": 15,
+    "prohibited_blocked_vcl": 15,
+    "prohibited_block_rate_vcl": 1.0,
+    "prohibited_block_rate_baseline": 0.0,
+    "benign_actions": 8,
+    "benign_permitted": 8,
+    "false_block_rate_vcl": 0.0
+  },
+  "B_regulatory_obligation_coverage": {
+    "obligations_checked": 6,
+    "evidenced_by_trace_vcl": 6,
+    "coverage_vcl": 1.0,
+    "coverage_baseline": 0.0,
+    "detail": {
+      "EU AI Act Art. 9 (risk management)": true,
+      "EU AI Act Art. 10 (data governance)": true,
+      "EU AI Act Art. 12 (record-keeping)": true,
+      "EU AI Act Art. 13 (transparency)": true,
+      "EU AI Act Art. 14 (human oversight)": true,
+      "NIST RMF MEASURE-2.7 (security/resilience)": true
+    }
+  },
+  "C_tamper_evidence": {
+    "tampered_traces": 40,
+    "detected": 40,
+    "detection_rate": 1.0,
+    "intact_traces": 40,
+    "false_positives": 0,
+    "false_positive_rate": 0.0
+  },
+  "D_governance_latency": {
+    "runs": 30,
+    "total_ms_mean": 126.3,
+    "total_ms_median": 122.4,
+    "total_ms_p95": 147.2,
+    "per_step_ms": {
+      "semantic_layer:parse_intent": 8.78,
+      "policy_engine:precheck_allow_supplier_query": 7.06,
+      "agent:plan_queries": 22.23,
+      "semantic_layer:governed_query": 10.93,
+      "context_graph:query_supplier_contracts": 25.77,
+      "policy_engine:per_row_filter": 10.54,
+      "response:synthesise_response": 5.63
+    },
+    "policy_decisions_in_query": 18,
+    "governance_ms_in_pipeline": 20.27,
+    "governance_overhead_pct": 0.2167,
+    "opa_ms_per_decision_keepalive": 2.653
+  }
+}
