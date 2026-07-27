@@ -30,7 +30,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["services/agent-runtime/tests", "services/policy-engine/tests"]
+testpaths = ["services/agent-runtime/tests", "services/policy-engine/tests", "services/feedback-loop/tests"]
 pythonpath = ["services/agent-runtime"]
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]

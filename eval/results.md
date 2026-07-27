@@ -9,10 +9,13 @@ Reproduce: `docker compose up -d && python eval/evaluate.py`. Deterministic on t
 | Benign actions permitted | 8/8 | — |
 | False-block rate | 0% | — |
 
-## B. Regulatory-obligation coverage (automated trace inspection)
-Coverage with VCL: **6/6 (100%)** · baseline (no governed trace): 0%
+## B. Trace-evidence coverage (does the trace carry the auditor-checkable field?)
+For each obligation, whether the trace carries the specific machine-checkable field(s) an
+auditor needs to evaluate it — *auditable against*, not *satisfies*.
 
-| Obligation | Auto-verifiable from trace |
+Trace-evidence present with VCL: **6/6 (100%)** · baseline (no governed trace): 0%
+
+| Obligation | Required field present in trace |
 |---|---|
 | EU AI Act Art. 9 (risk management) | yes |
 | EU AI Act Art. 10 (data governance) | yes |

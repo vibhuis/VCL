@@ -95,43 +95,56 @@ ten steps of the worked use case from spec §6.
 under adversarial prompting (data-echo, contact-sheet, CSV-export, debug-dump, jailbreak) and
 asked it to leak supplier contact PII, two ways: (a) *prompt-based guardrail* — raw data in
 context plus a system prompt saying "never reveal PII"; (b) *VCL* — restricted values redacted
-before the model sees them. Three models (two local via Ollama — reproducible, no key — and
-one hosted frontier model), 5 vectors × 5 runs each. Full method + limitations in
+before the model sees them. Four models — three open-weight (two families) via Ollama, one
+hosted frontier — 5 vectors × 5 runs each. Full method + limitations in
 [eval/adversarial_results.md](eval/adversarial_results.md):
 
-| Model | Prompt-guardrail leak rate | VCL leak rate |
-|---|---|---|
-| llama3.2:3b (local) | **28% ± 30%** | **0%** |
-| llama3.1:8b (local) | **44% ± 32%** | **0%** |
-| gpt-4o (hosted frontier) | **0% ± 0%** | **0%** |
+| Model | Class | Prompt-guardrail leak | VCL leak |
+|---|---|---|---|
+| llama3.2:3b | open-weight | **28% ± 30%** | **0%** |
+| llama3.1:8b | open-weight | **44% ± 32%** | **0%** |
+| mistral:7b | open-weight | **56% ± 23%** | **0%** |
+| gpt-4o | hosted frontier | **0% ± 0%** | **0%** |
 
-Prompt guardrails are **model-dependent and uncertifiable**: small/cheaper models leaked
-28–44% of adversarial attempts; gpt-4o held on these vectors — but that guarantee is
-behavioral, unauditable, and (for this EU-residency scenario) only available by sending
-regulated PII to a US-hosted model. The VCL leaks **0% on every model, structurally**,
-because the data is never in the model's context — with a tamper-evident trace to prove it.
+Prompt guardrails are **model-dependent and uncertifiable**: across two open-weight families,
+small self-hosted models leaked 28–56% of adversarial attempts; gpt-4o held on these vectors —
+but that guarantee is behavioral, unauditable, and (for this EU-residency scenario) only
+available by sending regulated PII to a US-hosted model. The VCL leaks **0% on every model,
+structurally**, because the data is never in the model's context.
 
-```bash
-ollama serve &  &&  VCL_LLM_MODEL=ollama/llama3.1:8b python eval/adversarial.py   # local
-OPENAI_API_KEY=…  VCL_LLM_MODEL=gpt-4o          python eval/adversarial.py        # hosted
-```
+> **Why this matters for the enterprise trend.** Teams are moving to small, self-hosted,
+> open-weight models for cost, latency, and data sovereignty — exactly the regime where
+> model-interior guardrails are weakest *and* where regulated data can't leave the boundary to
+> reach a stronger hosted model. The VCL's guarantee is model-independent; the urgency is what
+> the model trend makes acute.
 
-**Systems properties** — deterministic harness ([`eval/evaluate.py`](eval/evaluate.py)) on the
-seeded data; full results in [eval/results.md](eval/results.md):
+**Grounding accuracy** ([`eval/grounding.py`](eval/grounding.py)) — even *told every rule in the
+prompt*, small models apply defined metrics/policies inconsistently (RAG-style F1 **0.59–0.85**,
+wrongly including an out-of-EU supplier up to **40%** of the time); the VCL decides the set in
+the layer (**F1 1.0, 0%**), deterministically. Full results in
+[eval/grounding_results.md](eval/grounding_results.md).
+
+**Systems properties** — deterministic harnesses on the seeded data
+([eval/results.md](eval/results.md), [eval/scale_results.md](eval/scale_results.md),
+[eval/drift_results.md](eval/drift_results.md)):
 
 | Study | Result |
 |---|---|
-| **Tamper-evidence** | 40/40 tampered audit trails detected (100%), 0% false positives on intact trails |
-| **Governance latency** | ~126 ms/query (median 122 ms, p95 147 ms); in-pipeline governance ≈20 ms (22%); OPA ≈2.7 ms/decision |
-| **Policy-enforcement coverage** | 15/15 prohibited actions blocked, 0% false-block on 8 benign actions (deterministic correctness check) |
-| **Regulatory-obligation coverage** | 6/6 EU AI Act / NIST obligations auto-verifiable from the trace |
+| **Tamper-evidence** | 40/40 tampered audit trails detected (100%), 0% false positives |
+| **Governance latency** | ~126 ms/query; in-pipeline governance ≈20 ms (22%); OPA ≈2.7 ms/decision |
+| **Governance vs scale** | single-digit µs/row from 100 → 100k rows; **sub-second governance at 100k** |
+| **Feedback-loop drift detection** | 98% detection, 8% false-positive, ~25-event latency (minimal detector) |
+| **Policy-enforcement coverage** | 15/15 prohibited actions blocked, 0% false-block (deterministic check) |
+| **Trace-evidence coverage** | 6/6 obligations have their auditor-checkable field present in the trace |
 
 ```bash
-docker compose up -d && python eval/evaluate.py
+./reproduce.sh            # regenerate data + run all offline studies (local model, no key)
+./reproduce.sh --live     # also run the stack-dependent studies (needs docker compose up -d)
 ```
 
-Latency figures are machine-dependent (measured on the reference host); the tamper-evidence and
-coverage results are deterministic and reproduce exactly.
+Latency figures are machine-dependent; the tamper-evidence, scale, drift, and coverage results
+are deterministic and reproduce exactly. See [eval/claims-to-evidence.md](eval/claims-to-evidence.md)
+for the per-claim audit of what is demonstrated vs. argued vs. future work.
 
 ---
 

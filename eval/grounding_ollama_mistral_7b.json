@@ -1,0 +1,30 @@
+{
+  "model": "ollama/mistral:7b",
+  "reps": 5,
+  "pool_size": 7,
+  "ground_truth": [
+    "Acme Networks",
+    "Orion Systems",
+    "Summit Partners",
+    "Vertex Systems"
+  ],
+  "residency_trap": [
+    "Cobalt Industries"
+  ],
+  "conditions": {
+    "baseline_rag": {
+      "f1_mean": 0.587,
+      "f1_std": 0.213,
+      "precision_mean": 0.587,
+      "recall_mean": 0.65,
+      "residency_trap_rate": 0.2
+    },
+    "vcl": {
+      "f1_mean": 1.0,
+      "f1_std": 0.0,
+      "precision_mean": 1.0,
+      "recall_mean": 1.0,
+      "residency_trap_rate": 0.0
+    }
+  }
+}

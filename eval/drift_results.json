@@ -1,0 +1,9 @@
+{
+  "trials": 200,
+  "stable_rate": 0.1,
+  "drift_rate": 0.55,
+  "detection_rate": 0.98,
+  "mean_detection_latency_events": 25.3,
+  "median_detection_latency_events": 24.0,
+  "false_positive_rate": 0.08
+}

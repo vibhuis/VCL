@@ -1,0 +1,40 @@
+{
+  "scales": [
+    {
+      "rows": 100,
+      "governance_ms": 0.15,
+      "us_per_row": 1.45,
+      "policy_decisions": 183,
+      "allowed": 33,
+      "excluded": 67
+    },
+    {
+      "rows": 1000,
+      "governance_ms": 1.57,
+      "us_per_row": 1.57,
+      "policy_decisions": 1833,
+      "allowed": 333,
+      "excluded": 667
+    },
+    {
+      "rows": 10000,
+      "governance_ms": 19.88,
+      "us_per_row": 1.99,
+      "policy_decisions": 18333,
+      "allowed": 3333,
+      "excluded": 6667
+    },
+    {
+      "rows": 100000,
+      "governance_ms": 706.93,
+      "us_per_row": 7.07,
+      "policy_decisions": 183333,
+      "allowed": 33333,
+      "excluded": 66667
+    }
+  ],
+  "per_row_us_min": 1.45,
+  "per_row_us_max": 7.07,
+  "max_over_min_ratio": 4.88,
+  "verdict": "per-row cost stays single-digit \u00b5s across 3 orders of magnitude (1.45\u20137.07 \u00b5s/row); the mild growth is Python allocation/GC pressure + the O(n log n) ranking sort, not an algorithmic blowup. Sub-second (707 ms) even at 100k rows."
+}

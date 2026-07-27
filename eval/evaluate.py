@@ -6,8 +6,10 @@ to eval/results.json plus a Markdown report to eval/results.md:
 
   A. Policy-enforcement coverage  — block/mask rate on a suite of prohibited actions vs a
                                     permit rate on benign actions (VCL vs an ungoverned baseline).
-  B. Regulatory-obligation coverage — fraction of EU AI Act / NIST obligations that are
-                                    automatically checkable from the trace, with vs without VCL.
+  B. Trace-evidence coverage       — for each EU AI Act / NIST obligation, whether the trace
+                                    CARRIES the machine-checkable field(s) that obligation
+                                    requires (an auditor-inspectable record) — not a claim that
+                                    a deployment *satisfies* the obligation. VCL vs no-trace.
   C. Tamper-evidence              — detection rate of a tampered audit trail (and false-positive
                                     rate on intact trails).
   D. Governance latency overhead  — end-to-end query latency and the policy/audit share.
@@ -126,9 +128,12 @@ def _trace(trace_id: str) -> dict:
 
 
 def study_obligation_coverage() -> dict:
-    """For each obligation, an automated check over the trace decides whether the trace
-    carries machine-verifiable evidence. Baseline = an ungoverned agent that returns only an
-    answer (no governed trace) → nothing is automatically checkable."""
+    """For each obligation, an automated check decides whether the trace CARRIES the specific
+    machine-checkable field(s) an auditor would need to evaluate that obligation (e.g. a
+    timestamped record for Art. 12, a residency decision for Art. 10, a stated reason for the
+    redaction for Art. 13). This measures whether the trace is *auditable against* each
+    obligation — NOT that a real deployment *satisfies* it. Baseline = an ungoverned agent that
+    returns only an answer (no governed trace) → none of these fields exist to check."""
     d = _run(Q_PAPER)
     tr = _trace(d["trace_id"])
     events = tr["events"]
@@ -293,10 +298,12 @@ def _write_markdown(r: dict, path: Path) -> None:
          f"({a['prohibited_block_rate_vcl']:.0%}) | {a['prohibited_block_rate_baseline']:.0%} |",
          f"| Benign actions permitted | {a['benign_permitted']}/{a['benign_actions']} | — |",
          f"| False-block rate | {a['false_block_rate_vcl']:.0%} | — |", "",
-         "## B. Regulatory-obligation coverage (automated trace inspection)",
-         f"Coverage with VCL: **{b['evidenced_by_trace_vcl']}/{b['obligations_checked']} "
+         "## B. Trace-evidence coverage (does the trace carry the auditor-checkable field?)",
+         "For each obligation, whether the trace carries the specific machine-checkable field(s) "
+         "an auditor needs to evaluate it — *auditable against*, not *satisfies*.", "",
+         f"Trace-evidence present with VCL: **{b['evidenced_by_trace_vcl']}/{b['obligations_checked']} "
          f"({b['coverage_vcl']:.0%})** · baseline (no governed trace): {b['coverage_baseline']:.0%}", "",
-         "| Obligation | Auto-verifiable from trace |", "|---|---|"]
+         "| Obligation | Required field present in trace |", "|---|---|"]
     L += [f"| {k} | {'yes' if v else 'no'} |" for k, v in b["detail"].items()]
     L += ["", "## C. Tamper-evidence",
           f"- Tamper detection rate: **{c.get('detected','–')}/{c.get('tampered_traces','–')} "
