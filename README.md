@@ -191,6 +191,16 @@ This repo was built in the eight phases of `00-VCL-Prototype-Build-Spec.md` §7.
 Each phase is a self-contained, runnable commit. See the git history and
 [DECISIONS.md](DECISIONS.md).
 
+## Citing this work
+
+- **Software + evaluation artifact** (this repo, archived): Zenodo,
+  [10.5281/zenodo.21630958](https://doi.org/10.5281/zenodo.21630958)
+- **Companion paper:** *The Verifiable Context Layer*, SSRN
+  [abstract 6900918](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6900918)
+
+A machine-readable citation is in [CITATION.cff](CITATION.cff). The archived DOI is a frozen,
+reproducible snapshot; `main` here is the maintained version.
+
 ## License
 
 Apache-2.0. This is a reference implementation, not a production system (see spec §1.2).

@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software or its evaluation, please cite it as below."
+title: "VCL: The Verifiable Context Layer — Reference Implementation and Evaluation"
+abstract: >-
+  A working reference implementation of the Verifiable Context Layer (VCL) pattern for governing
+  enterprise agentic AI outside the model, with a reproducible evaluation: adversarial
+  policy-enforcement leak tests across four models, grounding accuracy versus RAG, governance
+  latency and scale, tamper-evident auditability, and drift detection.
+type: software
+authors:
+  - family-names: Bhutani
+    given-names: Vibhu
+repository-code: "https://github.com/vibhuis/VCL"
+license: Apache-2.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21630958
+    description: Concept DOI (always resolves to the latest archived version)
+keywords:
+  - enterprise AI
+  - agentic AI
+  - governance
+  - EU AI Act
+  - NIST AI RMF
+  - knowledge graph
+  - semantic layer
+  - verifiable context layer
+references:
+  - type: article
+    title: "The Verifiable Context Layer"
+    authors:
+      - family-names: Bhutani
+        given-names: Vibhu
+    url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6900918"
